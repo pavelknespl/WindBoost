@@ -7,7 +7,8 @@ on right click with wind_charge:
     cancel event
 
     push player forward at speed 10
-    set fall distance of player to 0  # zrušení pádového poškození
+    set fall distance of player to 0
+    set {windcharge.flying.%player%} to true
 
     set {windcharge.cooldown.%player%} to true
     wait 30 seconds
@@ -15,5 +16,11 @@ on right click with wind_charge:
 
 on damage of player:
     if "%damage cause%" is "fall":
-        if {windcharge.cooldown.%victim%} is set:
+        if {windcharge.flying.%victim%} is set:
             cancel event
+
+every 1 tick:
+    loop all players:
+        if {windcharge.flying.%loop-player%} is set:
+            if loop-player is on ground:
+                delete {windcharge.flying.%loop-player%}
