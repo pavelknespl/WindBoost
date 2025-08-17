@@ -1,0 +1,13 @@
+on right click with wind_charge:
+    if {windcharge.cooldown.%player%} is set:
+        cancel event
+        send "&cMusíš chvíli počkat!" to player
+        stop
+
+    cancel event
+
+    push player forward at speed 10
+
+    set {windcharge.cooldown.%player%} to true
+    wait 5 seconds
+    delete {windcharge.cooldown.%player%}
