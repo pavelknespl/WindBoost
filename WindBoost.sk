@@ -1,10 +1,25 @@
+# -------------------------
+# Konfigurovatelné proměnné
+# -------------------------
+options:
+    windboost_name: "&b⚡ WindBoost"
+    windboost_lore: "&7Použij pravým tlačítkem"
+    windboost_cooldown: 30 seconds
+    windboost_speed: 3
+
+# -------------------------
+# Příkaz na získání WindBoostu
+# -------------------------
 command /givewind:
     permission: op
     trigger:
-        give player 1 wind charge named "&b⚡ WindBoost" with lore "&7Použij pravým tlačítkem"
+        give player 1 wind charge named {@windboost_name} with lore {@windboost_lore}
 
+# -------------------------
+# Aktivace WindBoostu
+# -------------------------
 on right click:
-    if player's tool is a wind charge named "&b⚡ WindBoost":
+    if player's tool is a wind charge named {@windboost_name}:
         if {windboost.cooldown.%player%} is set:
             cancel event
             send "&cMusíš chvíli počkat!" to player
@@ -12,30 +27,38 @@ on right click:
 
         cancel event
 
-        push player forward at speed 3
+        push player forward at speed {@windboost_speed}
         set fall distance of player to 0
         set {windboost.flying.%player%} to true
 
         set {windboost.cooldown.%player%} to difference between now and now
         set {windboost.cooldown.time.%player%} to now
-        add 30 seconds to {windboost.cooldown.time.%player%}
+        add {@windboost_cooldown} to {windboost.cooldown.time.%player%}
 
-        wait 30 seconds
+        wait {@windboost_cooldown}
         delete {windboost.cooldown.%player%}
         delete {windboost.cooldown.time.%player%}
 
+# -------------------------
+# Zrušení fall damage
+# -------------------------
 on damage of player:
     if "%damage cause%" is "fall":
         if {windboost.flying.%victim%} is set:
             cancel event
 
+# -------------------------
+# Tick handler – ochrana + action bar
+# -------------------------
 every 1 tick:
     loop all players:
+        # ochrana proti pádu končí po dopadu
         if {windboost.flying.%loop-player%} is set:
             if loop-player is on ground:
                 delete {windboost.flying.%loop-player%}
 
-        if loop-player's tool is a wind charge named "&b⚡ WindBoost":
+        # action bar cooldown
+        if loop-player's tool is a wind charge named {@windboost_name}:
             if {windboost.cooldown.time.%loop-player%} is set:
                 set {_timeleft} to difference between {windboost.cooldown.time.%loop-player%} and now
                 if {_timeleft} > 0 second:
