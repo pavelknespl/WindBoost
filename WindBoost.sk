@@ -12,7 +12,7 @@ on right click with wind_charge:
 
     set {windcharge.cooldown.%player%} to difference between now and now
     set {windcharge.cooldown.time.%player%} to now
-    add 3 seconds to {windcharge.cooldown.time.%player%}
+    add 30 seconds to {windcharge.cooldown.time.%player%}
 
     wait 30 seconds
     delete {windcharge.cooldown.%player%}
