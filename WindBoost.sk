@@ -19,25 +19,30 @@ command /givewind:
 # Aktivace WindBoostu
 # -------------------------
 on right click:
-    if player's tool is a wind charge named {@windboost_name}:
-        if {windboost.cooldown.%player%} is set:
+    set {_item} to player's tool
+    if {_item} is air:
+        set {_item} to item in player's off hand
+
+    if {_item} is a wind charge:
+        if name of {_item} is {@windboost_name}:
+            if {windboost.cooldown.%player%} is set:
+                cancel event
+                send "&cMusíš chvíli počkat!" to player
+                stop
+
             cancel event
-            send "&cMusíš chvíli počkat!" to player
-            stop
 
-        cancel event
+            push player forward at speed {@windboost_speed}
+            set fall distance of player to 0
+            set {windboost.flying.%player%} to true
 
-        push player forward at speed {@windboost_speed}
-        set fall distance of player to 0
-        set {windboost.flying.%player%} to true
+            set {windboost.cooldown.%player%} to difference between now and now
+            set {windboost.cooldown.time.%player%} to now
+            add {@windboost_cooldown} to {windboost.cooldown.time.%player%}
 
-        set {windboost.cooldown.%player%} to difference between now and now
-        set {windboost.cooldown.time.%player%} to now
-        add {@windboost_cooldown} to {windboost.cooldown.time.%player%}
-
-        wait {@windboost_cooldown}
-        delete {windboost.cooldown.%player%}
-        delete {windboost.cooldown.time.%player%}
+            wait {@windboost_cooldown}
+            delete {windboost.cooldown.%player%}
+            delete {windboost.cooldown.time.%player%}
 
 # -------------------------
 # Zrušení fall damage
@@ -58,12 +63,17 @@ every 1 tick:
                 delete {windboost.flying.%loop-player%}
 
         # action bar cooldown
-        if loop-player's tool is a wind charge named {@windboost_name}:
-            if {windboost.cooldown.time.%loop-player%} is set:
-                set {_timeleft} to difference between {windboost.cooldown.time.%loop-player%} and now
-                if {_timeleft} > 0 second:
-                    send action bar "&c⏳ Cooldown: %{_timeleft}% " to loop-player
+        set {_item} to loop-player's tool
+        if {_item} is air:
+            set {_item} to item in loop-player's off hand
+
+        if {_item} is a wind charge:
+            if name of {_item} is {@windboost_name}:
+                if {windboost.cooldown.time.%loop-player%} is set:
+                    set {_timeleft} to round((difference between {windboost.cooldown.time.%loop-player%} and now) / 1 second)
+                    if {_timeleft} > 0:
+                        send action bar "&c⏳ Cooldown: %{_timeleft}%s" to loop-player
+                    else:
+                        send action bar "&a✔ Připraveno!" to loop-player
                 else:
                     send action bar "&a✔ Připraveno!" to loop-player
-            else:
-                send action bar "&a✔ Připraveno!" to loop-player
