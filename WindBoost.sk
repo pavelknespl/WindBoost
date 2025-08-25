@@ -34,7 +34,12 @@ on right click:
 
             push player forward at speed {@windboost_speed}
             set fall distance of player to 0
-            set {windboost.flying.%player%} to true
+
+            set {windboost.pending.%player%} to true
+            wait 1 second
+            if {windboost.pending.%player%} is set:
+                set {windboost.flying.%player%} to true
+                delete {windboost.pending.%player%}
 
             set {windboost.cooldown.%player%} to difference between now and now
             set {windboost.cooldown.time.%player%} to now
@@ -43,7 +48,6 @@ on right click:
             wait {@windboost_cooldown}
             delete {windboost.cooldown.%player%}
             delete {windboost.cooldown.time.%player%}
-
 # -------------------------
 # Zrušení fall damage
 # -------------------------
