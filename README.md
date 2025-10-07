@@ -1,22 +1,35 @@
-# ⚡ WindBoost Skript pro Minecraft⚡
+> ⚠️ **Warning:** This script may bug on the latest Minecraft versions. Use with caution!
+# ⚡ WindBoost Minecraft Script ⚡
 
-Přidává rychlý push dopředu!
-Jednoduchý skript s **cooldownem** a přehledným **action barem**, který ukazuje, kdy je WindBoost připraven k použití.
+Give yourself a quick forward boost!  
+A lightweight Skript with a **cooldown** and a clear **action bar** that shows when WindBoost is ready.
 
 ---
 
-## ✨ Funkce
+## ✨ Features
 
-- ✅ **Rychlý push dopředu** 
-- ✅ **Ochrana proti pádu** – žádné poškození pádem během boostu  
-- ✅ **Cooldown s Action Bar** – přehledně zobrazuje zbylý čas  
+- ✅ **Quick Forward Push** – instantly boost forward  
+- ✅ **Fall Protection** – no fall damage during the boost  
+- ✅ **Cooldown Display** – action bar shows remaining cooldown  
+
 ---
 
-## 🛠️ Instalace
+## 🛠️ Installation
 
-1. Nainstalujte [Skript](https://github.com/SkriptLang/Skript) 2.7+ na server vaší verze.
-2. Vložtě skript do `plugins/Skript/scripts/`   
-3. Reloadujte Skript příkazem:  
-/skript reload scripts
-4. Givnětě si item příkazem (pouze pro lidi s OP):
-/givewind 
+1. Install [Skript](https://github.com/SkriptLang/Skript) 2.7+ on your server.  
+2. Place the script in `plugins/Skript/scripts/`.  
+3. Reload Skript with:  
+/skript reload skripts
+4. Give yourself the item (OP only):  
+
+---
+
+## ⚡ Usage
+
+- Use the item to activate WindBoost.  
+- Watch the action bar for cooldown status.  
+- Move faster without worrying about fall damage!  
+
+---
+
+> Simple, fun, and fast movement for Minecraft.
