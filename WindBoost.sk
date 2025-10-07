@@ -1,86 +1,99 @@
-# -------------------------
-# Konfigurovatelné proměnné
-# -------------------------
-options:
-    windboost_name: "&b⚡ WindBoost"
-    windboost_lore: "&7Použij pravým tlačítkem"
-    windboost_cooldown: 30 seconds
-    windboost_speed: 3
+# Configurable Settings
 
-# -------------------------
-# Příkaz na získání WindBoostu
-# -------------------------
+
+
+options:
+    windboost_display_name: "&b⚡ WindBoost"
+    windboost_item_lore: "&7Right-click to use"
+    windboost_cooldown_time: 30 seconds
+    windboost_push_speed: 3
+
+
+
+# Command: Give WindBoost Item
+
+
+
 command /givewind:
     permission: op
     trigger:
-        give player 1 wind charge named {@windboost_name} with lore {@windboost_lore}
+        give player 1 wind charge named {@windboost_display_name} with lore {@windboost_item_lore}
 
-# -------------------------
-# Aktivace WindBoostu
-# -------------------------
+
+
+
+# WindBoost Usage Handler
+
+
+
 on right click:
-    set {_item} to player's tool
-    if {_item} is air:
-        set {_item} to item in player's off hand
+    set {_heldItem} to player's tool
+    if {_heldItem} is air:
+        set {_heldItem} to item in player's off hand
 
-    if {_item} is a wind charge:
-        if name of {_item} is {@windboost_name}:
-            if {windboost.cooldown.%player%} is set:
+    if {_heldItem} is a wind charge:
+        if name of {_heldItem} is {@windboost_display_name}:
+            if {windboost.cooldown_active.%player%} is set:
                 cancel event
-                send "&cMusíš chvíli počkat!" to player
+                send "&cPlease wait before using WindBoost again!" to player
                 stop
 
             cancel event
 
-            push player forward at speed {@windboost_speed}
+            push player forward at speed {@windboost_push_speed}
             set fall distance of player to 0
 
-            set {windboost.protection1.%player%} to true
-            set {windboost.cooldown.%player%} to difference between now and now
-            set {windboost.cooldown.time.%player%} to now
-            add {@windboost_cooldown} to {windboost.cooldown.time.%player%}
+            set {windboost.no_fall_damage.%player%} to true
+            set {windboost.cooldown_active.%player%} to true
+            set {windboost.cooldown_end_time.%player%} to now
+            add {@windboost_cooldown_time} to {windboost.cooldown_end_time.%player%}
 
-            wait {@windboost_cooldown}
-            delete {windboost.cooldown.%player%}
-            delete {windboost.cooldown.time.%player%}
+            wait {@windboost_cooldown_time}
+            delete {windboost.cooldown_active.%player%}
+            delete {windboost.cooldown_end_time.%player%}
 
             wait 1 second
-            delete {windboost.protection1.%player%}
-            set {windboost.flying.%player%} to true
+            delete {windboost.no_fall_damage.%player%}
+            set {windboost.waiting_for_landing.%player%} to true
 
-# -------------------------
-# Zrušení fall damage
-# -------------------------
+
+
+# Prevent Fall Damage After WindBoost
+
+
+
 on damage of player:
     if "%damage cause%" is "fall":
-        if {windboost.protection1.%victim%} is set:
+        if {windboost.no_fall_damage.%victim%} is set:
             cancel event
-        else if {windboost.flying.%victim%} is set:
+        else if {windboost.waiting_for_landing.%victim%} is set:
             cancel event
 
 
-# -------------------------
-# Tick handler – ochrana + action bar
-# -------------------------
+
+# Tick Handler: Landing Check & Action Bar
+
+
+
 every 1 tick:
     loop all players:
-        # druhá ochrana končí po dopadu
-        if {windboost.flying.%loop-player%} is set:
+        # Remove landing protection when player touches the ground
+        if {windboost.waiting_for_landing.%loop-player%} is set:
             if loop-player is on ground:
-                delete {windboost.flying.%loop-player%}
+                delete {windboost.waiting_for_landing.%loop-player%}
 
-        # action bar cooldown
-        set {_item} to loop-player's tool
-        if {_item} is air:
-            set {_item} to item in loop-player's off hand
+        # Show cooldown or ready status in action bar if holding WindBoost
+        set {_heldItem} to loop-player's tool
+        if {_heldItem} is air:
+            set {_heldItem} to item in loop-player's off hand
 
-        if {_item} is a wind charge:
-            if name of {_item} is {@windboost_name}:
-                if {windboost.cooldown.time.%loop-player%} is set:
-                    set {_timeleft} to round((difference between {windboost.cooldown.time.%loop-player%} and now) / 1 second)
-                    if {_timeleft} > 0:
-                        send action bar "&c⏳ Cooldown: %{_timeleft}%s" to loop-player
+        if {_heldItem} is a wind charge:
+            if name of {_heldItem} is {@windboost_display_name}:
+                if {windboost.cooldown_end_time.%loop-player%} is set:
+                    set {_secondsLeft} to round((difference between {windboost.cooldown_end_time.%loop-player%} and now) / 1 second)
+                    if {_secondsLeft} > 0:
+                        send action bar "&c⏳ Cooldown: %{_secondsLeft}%s" to loop-player
                     else:
-                        send action bar "&a✔ Připraveno!" to loop-player
+                        send action bar "&a✔ WindBoost ready!" to loop-player
                 else:
-                    send action bar "&a✔ Připraveno!" to loop-player
+                    send action bar "&a✔ WindBoost ready!" to loop-player
